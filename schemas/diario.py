@@ -16,6 +16,14 @@ class DiarioBuscaSchema(BaseModel):
     """
     id: int = 1
 
+class DiarioEditaSchema(BaseModel):
+    """ 
+        Define o que deve ser passado para edição de um registro
+    """
+    id: int = 1
+    descricao: str = "Me sinto normal porque o dia transcorreu sem grandes alegrias, ou infelicidades."
+    nota: Optional[int] = 5
+
 
 class ListagemDiariosSchema(BaseModel):
     """ Define como uma listagem de diarios será retornada.

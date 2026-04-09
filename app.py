@@ -56,6 +56,46 @@ def add_diario(form: DiarioSchema):
         return {"mesage": error_msg}, 400
 
 
+@app.put('/diario', tags=[diario_tag],
+          responses={"200": DiarioViewSchema, "409": ErrorSchema, "400": ErrorSchema})
+def edit_diario(form: DiarioEditaSchema):
+    """Edita um registro da base de dados
+
+    Retorna uma representação do diário editado.
+    """
+
+    try:
+        # criando conexão com a base
+        session = Session()
+
+        # busca diário
+        diario = session.query(Diario).filter(Diario.id == form.id).first()
+
+        # retorna not found em caso de não exisitr o id procurado na tabela
+        if not diario:
+            return {"message": "Registro não encontrado"}, 404
+
+        # Atualiza os campos
+        diario.descricao = form.descricao
+        diario.nota = form.nota
+        
+        # efetivando o camando de edição de item na tabela
+        session.commit()
+        
+        return apresenta_diario(diario), 200
+
+    except IntegrityError as e:
+        # como a duplicidade do nome é a provável razão do IntegrityError
+        error_msg = "Houve algum erro."
+        return {"mesage": error_msg}, 409
+
+    except Exception as e:
+        # caso um erro fora do previsto
+        error_msg = "Não foi possível processar a informação."
+        
+        return {"mesage": error_msg}, 400
+
+
 @app.get('/diarios', tags=[diario_tag],
          responses={"200": ListagemDiariosSchema, "404": ErrorSchema})
 def get_diarios():
